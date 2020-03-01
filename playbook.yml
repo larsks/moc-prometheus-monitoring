@@ -22,6 +22,11 @@
     - node_exporter
     - machine_role
     - libvirt_exporter
+
+- hosts: overcloud
+  gather_facts: false
+  roles:
+    - node_exporter
   tasks:
     - name: clean out old role.prom file
       file:
