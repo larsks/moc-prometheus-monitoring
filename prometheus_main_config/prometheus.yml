@@ -32,6 +32,11 @@ scrape_configs:
     static_configs:
       - targets:
           - 172.16.0.250:9100
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: (.*?)(:.*)?
+        replacement: $1
+        target_label: instance
 
   - job_name: 'overcloud-node'
     static_configs:
@@ -71,6 +76,11 @@ scrape_configs:
           - neu-5-39-control2.kzn.moc:9100
           - neu-17-11-nc2.kzn.moc:9100
           - neu-19-11-nc1.kzn.moc:9100
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: (.*?)(:.*)?
+        replacement: $1
+        target_label: instance
 
   - job_name: 'overcloud-libvirt'
     static_configs:
@@ -105,6 +115,11 @@ scrape_configs:
           - neu-5-36-stackcomp.kzn.moc:5111
           - neu-5-37-stackcomp.kzn.moc:5111
           - neu-5-38-stackcomp.kzn.moc:5111
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: (.*?)(:.*)?
+        replacement: $1
+        target_label: instance
 
 remote_write:
   - url: "http://prom_pg_adapter:9201/write"
