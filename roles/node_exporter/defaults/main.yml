@@ -1,0 +1,6 @@
+---
+node_exporter_version: 1.0.0-rc.0
+node_exporter_install_prefix: /opt/prometheus
+node_exporter_url: https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
+node_exporter_directory: /etc/prometheus/node-exporter
+textfile_collector_directory: "{{ node_exporter_directory }}"

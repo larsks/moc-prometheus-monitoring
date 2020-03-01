@@ -1,0 +1,19 @@
+---
+- name: install python docker support
+  package:
+    name: python-docker
+    state: installed
+
+- name: start libvirt exporter
+  docker_container:
+    state: started
+    name: libvirt-exporter
+    image: larsks/libvirt-exporter
+    pull: true
+    command: -p 5111 -v -x /src/nova-labels.yml
+    volumes:
+      - "/var/run/libvirt:/var/run/libvirt"
+    published_ports:
+      - "5111:5111"
+    restart_policy: on-failure
+    recreate: "{{ recreate_containers|default(false)|bool }}"

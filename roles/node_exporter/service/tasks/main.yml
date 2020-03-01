@@ -1,0 +1,45 @@
+---
+- name: remove node exporter rpm
+  package:
+    name: prometheus-node-exporter
+    state: absent
+
+- name: ensure prefix directory exists
+  file:
+    path: "{{ node_exporter_install_prefix }}/bin"
+    state: directory
+
+- name: install node exporter binary
+  copy:
+    src: node_exporter
+    dest: /opt/prometheus/bin/node_exporter
+    mode: "0755"
+  notify: restart node exporter
+
+- name: install node exporter service unit
+  template:
+    src: node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+  notify:
+    - reload systemd
+    - restart node exporter
+
+- name: ensure node exporter directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ node_exporter_directory }}"
+    - "{{ textfile_collector_directory }}"
+
+- name: configure node exporter
+  template:
+    src: node_exporter.conf
+    dest: "{{ node_exporter_directory }}/node_exporter.conf"
+  notify: restart node exporter
+
+- name: activate node exporter service
+  service:
+    name: node_exporter
+    state: started
+    enabled: true

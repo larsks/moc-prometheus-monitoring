@@ -1,0 +1,12 @@
+---
+- name: ensure textfile collector directory exists
+  file:
+    path: "{{ textfile_collector_directory }}"
+    state: directory
+
+- name: write role metrics
+  copy:
+    content: |
+      machine_role{role="{{ item }}"} 1
+    dest: "{{ textfile_collector_directory }}/roles.prom"
+  loop: "{{ machine_roles }}"

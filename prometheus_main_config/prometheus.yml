@@ -1,0 +1,110 @@
+---
+# my global config
+global:
+  scrape_interval: 60s
+  evaluation_interval: 60s
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+        #   - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global
+# 'evaluation_interval'.
+rule_files:
+# - "first_rules.yml"
+# - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  - job_name: 'prometheus'
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'overcloud-node'
+    static_configs:
+      - targets:
+          - neu-17-8-fpga.kzn.moc:9100
+          - neu-19-8-fpga.kzn.moc:9100
+          - neu-15-12-gcomp.kzn.moc:9100
+          - neu-17-12-gcomp.kzn.moc:9100
+          - neu-19-12-gcomp.kzn.moc:9100
+          - neu-15-34-stackcomp.kzn.moc:9100
+          - neu-15-35-stackcomp.kzn.moc:9100
+          - neu-15-36-stackcomp.kzn.moc:9100
+          - neu-15-37-stackcomp.kzn.moc:9100
+          - neu-15-38-stackcomp.kzn.moc:9100
+          - neu-17-1-stackcomp.kzn.moc:9100
+          - neu-17-2-stackcomp.kzn.moc:9100
+          - neu-17-3-stackcomp.kzn.moc:9100
+          - neu-17-4-stackcomp.kzn.moc:9100
+          - neu-17-5-stackcomp.kzn.moc:9100
+          - neu-19-1-stackcomp.kzn.moc:9100
+          - neu-19-2-stackcomp.kzn.moc:9100
+          - neu-19-3-stackcomp.kzn.moc:9100
+          - neu-19-4-stackcomp.kzn.moc:9100
+          - neu-19-5-stackcomp.kzn.moc:9100
+          - neu-3-34-stackcomp.kzn.moc:9100
+          - neu-3-35-stackcomp.kzn.moc:9100
+          - neu-3-36-stackcomp.kzn.moc:9100
+          - neu-3-37-stackcomp.kzn.moc:9100
+          - neu-3-38-stackcomp.kzn.moc:9100
+          - neu-5-34-stackcomp.kzn.moc:9100
+          - neu-5-35-stackcomp.kzn.moc:9100
+          - neu-5-36-stackcomp.kzn.moc:9100
+          - neu-5-37-stackcomp.kzn.moc:9100
+          - neu-5-38-stackcomp.kzn.moc:9100
+          - neu-15-39-control1.kzn.moc:9100
+          - neu-3-39-control3.kzn.moc:9100
+          - neu-5-39-control2.kzn.moc:9100
+          - neu-17-11-nc2.kzn.moc:9100
+          - neu-19-11-nc1.kzn.moc:9100
+
+  - job_name: 'overcloud-libvirt'
+    static_configs:
+      - targets:
+          - neu-17-8-fpga.kzn.moc:5111
+          - neu-19-8-fpga.kzn.moc:5111
+          - neu-15-12-gcomp.kzn.moc:5111
+          - neu-17-12-gcomp.kzn.moc:5111
+          - neu-19-12-gcomp.kzn.moc:5111
+          - neu-15-34-stackcomp.kzn.moc:5111
+          - neu-15-35-stackcomp.kzn.moc:5111
+          - neu-15-36-stackcomp.kzn.moc:5111
+          - neu-15-37-stackcomp.kzn.moc:5111
+          - neu-15-38-stackcomp.kzn.moc:5111
+          - neu-17-1-stackcomp.kzn.moc:5111
+          - neu-17-2-stackcomp.kzn.moc:5111
+          - neu-17-3-stackcomp.kzn.moc:5111
+          - neu-17-4-stackcomp.kzn.moc:5111
+          - neu-17-5-stackcomp.kzn.moc:5111
+          - neu-19-1-stackcomp.kzn.moc:5111
+          - neu-19-2-stackcomp.kzn.moc:5111
+          - neu-19-3-stackcomp.kzn.moc:5111
+          - neu-19-4-stackcomp.kzn.moc:5111
+          - neu-19-5-stackcomp.kzn.moc:5111
+          - neu-3-34-stackcomp.kzn.moc:5111
+          - neu-3-35-stackcomp.kzn.moc:5111
+          - neu-3-36-stackcomp.kzn.moc:5111
+          - neu-3-37-stackcomp.kzn.moc:5111
+          - neu-3-38-stackcomp.kzn.moc:5111
+          - neu-5-34-stackcomp.kzn.moc:5111
+          - neu-5-35-stackcomp.kzn.moc:5111
+          - neu-5-36-stackcomp.kzn.moc:5111
+          - neu-5-37-stackcomp.kzn.moc:5111
+          - neu-5-38-stackcomp.kzn.moc:5111
+          - neu-15-39-control1.kzn.moc:5111
+          - neu-3-39-control3.kzn.moc:5111
+          - neu-5-39-control2.kzn.moc:5111
+          - neu-17-11-nc2.kzn.moc:5111
+          - neu-19-11-nc1.kzn.moc:5111
+
+remote_write:
+  - url: "http://prom_pg_adapter:9201/write"

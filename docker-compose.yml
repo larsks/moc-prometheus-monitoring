@@ -1,0 +1,52 @@
+---
+version: "3"
+
+volumes:
+  postgres_data:
+  prometheus_data_main:
+  prometheus_data_archive:
+  grafana_data:
+
+services:
+  postgres:
+    image: timescale/pg_prometheus:latest-pg11
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - "postgres_data:/var/lib/postgresql/data"
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+  prom_pg_adapter:
+    image: timescale/prometheus-postgresql-adapter:latest
+    command: "-pg-host=postgres -pg-password=${POSTGRES_PASSWORD} -log-level warn"
+    restart: on-failure
+
+  prom_main:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - "prometheus_data_main:/prometheus"
+      - "./prometheus_main_config:/etc/prometheus"
+
+  prom_archive:
+    image: prom/prometheus
+    ports:
+      - "9191:9090"
+    volumes:
+      - "prometheus_data_archive:/prometheus"
+      - "./prometheus_archive_config:/etc/prometheus"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - "grafana_data:/var/lib/grafana"
+      - "./grafana_provisioning:/etc/grafana/provisioning"

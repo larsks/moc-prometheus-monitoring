@@ -1,0 +1,8 @@
+---
+node_collectors:
+  textfile:
+    directory: "{{ textfile_collector_directory }}"
+  systemd:
+  ksmd:
+  ntp:
+  processes:
