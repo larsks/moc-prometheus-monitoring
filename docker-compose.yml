@@ -21,11 +21,12 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
+    restart: always
 
   prom_pg_adapter:
     image: timescale/prometheus-postgresql-adapter:latest
     command: "-pg-host=postgres -pg-password=${POSTGRES_PASSWORD} -log-level warn"
-    restart: on-failure
+    restart: always
 
   prom_main:
     image: prom/prometheus
@@ -34,6 +35,7 @@ services:
     volumes:
       - "prometheus_data_main:/prometheus"
       - "./prometheus_main_config:/etc/prometheus"
+    restart: always
 
   prom_archive:
     image: prom/prometheus
@@ -42,6 +44,7 @@ services:
     volumes:
       - "prometheus_data_archive:/prometheus"
       - "./prometheus_archive_config:/etc/prometheus"
+    restart: always
 
   grafana:
     image: grafana/grafana
@@ -50,3 +53,4 @@ services:
     volumes:
       - "grafana_data:/var/lib/grafana"
       - "./grafana_provisioning:/etc/grafana/provisioning"
+    restart: always
