@@ -25,7 +25,8 @@ services:
 
   prom_pg_adapter:
     image: timescale/prometheus-postgresql-adapter:latest
-    command: "-pg-host=postgres -pg-password=${POSTGRES_PASSWORD} -log-level warn"
+    command: >-
+      -pg-host=postgres -pg-password=${POSTGRES_PASSWORD} -log-level warn
     restart: always
 
   prom_main:
@@ -53,4 +54,11 @@ services:
     volumes:
       - "grafana_data:/var/lib/grafana"
       - "./grafana_provisioning:/etc/grafana/provisioning"
+    restart: always
+
+  cinder_exporter:
+    image: larsks/cinder-exporter
+    volumes:
+      - ./openstack:/etc/openstack
+    command: -v --os-cloud kaizen
     restart: always
