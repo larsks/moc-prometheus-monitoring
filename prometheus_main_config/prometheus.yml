@@ -39,6 +39,8 @@ scrape_configs:
         target_label: instance
 
   - job_name: 'cinder-volumes'
+    scrape_interval: 15m
+    scrape_timeout: 60s
     static_configs:
       - targets:
           - cinder_exporter:5112
