@@ -45,6 +45,13 @@ scrape_configs:
       - targets:
           - cinder_exporter:5112
 
+  - job_name: 'keystone-info'
+    scrape_interval: 15m
+    scrape_timeout: 60s
+    static_configs:
+      - targets:
+          - keystone_exporter:5113
+
   - job_name: 'overcloud-node'
     static_configs:
       - targets:

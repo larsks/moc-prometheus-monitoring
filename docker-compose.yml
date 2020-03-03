@@ -62,3 +62,10 @@ services:
       - ./openstack:/etc/openstack
     command: -v --os-cloud kaizen
     restart: always
+
+  keystone_exporter:
+    image: larsks/keystone-exporter
+    volumes:
+      - ./openstack:/etc/openstack
+    command: -v --os-cloud kaizen
+    restart: always
