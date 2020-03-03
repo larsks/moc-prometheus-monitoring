@@ -5,8 +5,6 @@
     state: directory
 
 - name: write role metrics
-  copy:
-    content: |
-      machine_role{role="{{ item }}"} 1
+  template:
+    src: roles.prom
     dest: "{{ textfile_collector_directory }}/roles.prom"
-  loop: "{{ machine_roles }}"

@@ -1,0 +1,4 @@
+---
+machine_roles:
+  - overcloud-compute
+  - overcloud-gpucompute
