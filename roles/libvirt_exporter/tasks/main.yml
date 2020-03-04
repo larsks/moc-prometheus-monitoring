@@ -10,7 +10,10 @@
     name: libvirt-exporter
     image: larsks/libvirt-exporter
     pull: true
-    command: -p 5111 -v -x /src/nova-labels.yml
+    command: >-
+      -p 5111 -v
+      {% if debug_libvirt_exporter|default(false)|bool %}-v{% endif %}
+      -x /src/nova-labels.yml
     volumes:
       - "/var/run/libvirt:/var/run/libvirt"
     published_ports:
