@@ -52,6 +52,11 @@ scrape_configs:
       - targets:
           - keystone_exporter:5113
 
+  - job_name: 'postgres-info'
+    static_configs:
+      - targets:
+          - postgres_exporter:9187
+
   - job_name: 'overcloud-node'
     static_configs:
       - targets:

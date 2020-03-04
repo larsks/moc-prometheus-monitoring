@@ -23,6 +23,16 @@ services:
       retries: 10
     restart: always
 
+  postgres_exporter:
+    image: wrouesnel/postgres_exporter
+    environment:
+      DATA_SOURCE_URI: "postgres?sslmode=disable"
+      DATA_SOURCE_USER: "postgres"
+      DATA_SOURCE_PASS: "${POSTGRES_PASSWORD}"
+      DATA_SOURCE_WEB_LISTEN_ADDRESS: ":9187"
+      PG_EXPORTER_AUTO_DISCOVER_DATABASES: "true"
+      PG_EXPORTER_EXCLUDE_DATABASES: "template0,template1"
+
   prom_pg_adapter:
     image: timescale/prometheus-postgresql-adapter:latest
     command: >-
