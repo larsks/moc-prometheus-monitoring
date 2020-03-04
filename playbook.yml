@@ -1,26 +1,19 @@
 ---
+- hosts: undercloud
+  gather_facts: false
+  roles:
+    - node_exporter/service
+    - machine_role
+
 - hosts: overcloud
   gather_facts: false
   roles:
     - node_exporter/service
-
-- hosts: controller
-  gather_facts: false
-  roles:
-    - node_exporter
-    - machine_role
-
-- hosts: network
-  gather_facts: false
-  roles:
-    - node_exporter
     - machine_role
 
 - hosts: compute
   gather_facts: false
   roles:
-    - node_exporter
-    - machine_role
     - libvirt_exporter
 
 - hosts: overcloud

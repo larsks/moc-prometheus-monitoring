@@ -60,6 +60,7 @@ scrape_configs:
   - job_name: 'overcloud-node'
     static_configs:
       - targets:
+          - kzn-undercloud.kzn.moc:9100
           - neu-17-8-fpga.kzn.moc:9100
           - neu-19-8-fpga.kzn.moc:9100
           - neu-15-12-gcomp.kzn.moc:9100
