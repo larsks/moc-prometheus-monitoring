@@ -1,9 +1,4 @@
 ---
-- name: remove node exporter rpm
-  package:
-    name: prometheus-node-exporter
-    state: absent
-
 - name: ensure prefix directory exists
   file:
     path: "{{ node_exporter_install_prefix }}/bin"
