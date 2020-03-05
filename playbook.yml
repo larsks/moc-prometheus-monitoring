@@ -1,3 +1,5 @@
+# This playbook installs the Prometheus node-exporter and our custom
+# libvirt-exporter on Kaizen.
 ---
 - hosts: undercloud
   gather_facts: false
@@ -15,13 +17,3 @@
   gather_facts: false
   roles:
     - libvirt_exporter
-
-- hosts: overcloud
-  gather_facts: false
-  roles:
-    - node_exporter
-  tasks:
-    - name: clean out old role.prom file
-      file:
-        path: "{{ textfile_collector_directory }}/role.prom"
-        state: absent
