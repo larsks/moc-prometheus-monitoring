@@ -25,10 +25,6 @@ rule_files:
 # Here it's Prometheus itself.
 scrape_configs:
   - job_name: 'prometheus'
-
-    # metrics_path defaults to '/metrics'
-    # scheme defaults to 'http'.
-
     static_configs:
       - targets: ['localhost:9090']
 
@@ -42,7 +38,7 @@ scrape_configs:
         replacement: $1
         target_label: instance
 
-  - job_name: 'openstack-info-slow'
+  - job_name: 'openstack-slow'
     scrape_interval: 15m
     scrape_timeout: 60s
     static_configs:
@@ -50,14 +46,14 @@ scrape_configs:
           - cinder_exporter:5112
           - keystone_exporter:5113
 
-  - job_name: 'openstack-info-fast'
+  - job_name: 'openstack-fast'
     scrape_interval: 60s
     scrape_timeout: 20s
     static_configs:
       - targets:
           - nova_exporter:5114
 
-  - job_name: 'postgres-info'
+  - job_name: 'postgres'
     static_configs:
       - targets:
           - postgres_exporter:9187
