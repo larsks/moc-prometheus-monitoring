@@ -77,14 +77,14 @@ services:
     image: larsks/cinder-exporter
     volumes:
       - ./openstack:/etc/openstack
-    command: -v --os-cloud kaizen
+    command: -v --os-cloud ${OS_CLOUD}
     restart: always
 
   keystone_exporter:
     image: larsks/keystone-exporter
     volumes:
       - ./openstack:/etc/openstack
-    command: -v --os-cloud kaizen
+    command: -v --os-cloud ${OS_CLOUD}
     restart: always
 
   thanos_sidecar:
