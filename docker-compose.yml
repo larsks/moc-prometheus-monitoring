@@ -87,6 +87,13 @@ services:
     command: -v --os-cloud ${OS_CLOUD}
     restart: always
 
+  nova_exporter:
+    image: larsks/nova-exporter
+    volumes:
+      - ./openstack:/etc/openstack
+    command: -v --os-cloud ${OS_CLOUD}
+    restart: always
+
   thanos_sidecar:
     image: thanosio/thanos
     volumes:

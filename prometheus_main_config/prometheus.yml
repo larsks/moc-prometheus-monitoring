@@ -42,19 +42,20 @@ scrape_configs:
         replacement: $1
         target_label: instance
 
-  - job_name: 'cinder-volumes'
+  - job_name: 'openstack-info-slow'
     scrape_interval: 15m
     scrape_timeout: 60s
     static_configs:
       - targets:
           - cinder_exporter:5112
+          - keystone_exporter:5113
 
-  - job_name: 'keystone-info'
-    scrape_interval: 15m
-    scrape_timeout: 60s
+  - job_name: 'openstack-info-fast'
+    scrape_interval: 60s
+    scrape_timeout: 20s
     static_configs:
       - targets:
-          - keystone_exporter:5113
+          - nova_exporter:5114
 
   - job_name: 'postgres-info'
     static_configs:
