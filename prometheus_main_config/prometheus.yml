@@ -4,6 +4,10 @@ global:
   scrape_interval: 60s
   evaluation_interval: 60s
 
+  external_labels:
+    promcluster_name: moctest
+    promcluster_replica: 0
+
 # Alertmanager configuration
 alerting:
   alertmanagers:

@@ -47,6 +47,13 @@ services:
       - "prometheus_data_main:/prometheus"
       - "./prometheus_main_config:/etc/prometheus"
     restart: always
+    command: >-
+      --config.file=/etc/prometheus/prometheus.yml
+      --storage.tsdb.path=/prometheus
+      --web.console.libraries=/usr/share/prometheus/console_libraries
+      --web.console.templates=/usr/share/prometheus/consoles
+      --storage.tsdb.min-block-duration=2h
+      --storage.tsdb.max-block-duration=2h
 
   prom_archive:
     image: prom/prometheus
@@ -79,3 +86,14 @@ services:
       - ./openstack:/etc/openstack
     command: -v --os-cloud kaizen
     restart: always
+
+  thanos_sidecar:
+    image: thanosio/thanos
+    volumes:
+      - prometheus_data_main:/prometheus
+      - ./thanos:/etc/thanos
+    command: >-
+      sidecar
+      --prometheus.url http://prom_main:9090
+      --tsdb.path /prometheus
+      --objstore.config-file /etc/thanos/bucket_config.yml
