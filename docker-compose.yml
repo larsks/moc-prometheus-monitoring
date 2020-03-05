@@ -106,6 +106,7 @@ services:
       --objstore.config-file /etc/thanos/bucket_config.yml
       --http-address 0.0.0.0:19191
       --grpc-address 0.0.0.0:19090
+    restart: always
 
   thanos_store:
     image: thanosio/thanos
@@ -117,6 +118,7 @@ services:
       --objstore.config-file /etc/thanos/bucket_config.yml
       --http-address 0.0.0.0:19191
       --grpc-address 0.0.0.0:19090
+    restart: always
 
   thanos_query:
     image: thanosio/thanos
@@ -127,6 +129,7 @@ services:
       --store thanos_store:19090
     ports:
       - 19192:19192
+    restart: always
 
   thanos_compactor:
     image: thanosio/thanos
@@ -138,3 +141,4 @@ services:
       --objstore.config-file /etc/thanos/bucket_config.yml
       --http-address 0.0.0.0:19191
       -w
+    restart: always
