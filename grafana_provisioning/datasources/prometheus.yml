@@ -4,4 +4,14 @@ datasources:
   - name: Prometheus
     type: prometheus
     access: proxy
+    url: http://thanos_query:19192
+
+  - name: Prometheus (Direct)
+    type: prometheus
+    access: proxy
     url: http://prom_main:9090
+
+  - name: Prometheus (Timescale)
+    type: prometheus
+    access: proxy
+    url: http://prom_archive:9090
