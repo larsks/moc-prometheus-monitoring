@@ -100,11 +100,23 @@ services:
       --http-address 0.0.0.0:19191
       --grpc-address 0.0.0.0:19090
 
+  thanos_store:
+    image: thanosio/thanos
+    volumes:
+      - ./thanos:/etc/thanos
+    command: >-
+      store
+      --data-dir /var/thanos/cache
+      --objstore.config-file /etc/thanos/bucket_config.yml
+      --http-address 0.0.0.0:19191
+      --grpc-address 0.0.0.0:19090
+
   thanos_query:
     image: thanosio/thanos
     command: >-
       query
       --http-address 0.0.0.0:19192
       --store thanos_sidecar:19090
+      --store thanos_store:19090
     ports:
       - 19192:19192
