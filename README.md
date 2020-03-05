@@ -20,7 +20,8 @@ This sets up a Prometheus monitoring stack for the Kaizen OpenStack environment.
 
 - `prom_archive`
 
-  This is a read-only Prometheus instance for testing queries against the TimescaleDB backend.
+  This is a read-only Prometheus instance for testing queries against the
+  TimescaleDB backend.
 
 - `grafana`
 
@@ -37,7 +38,8 @@ This sets up a Prometheus monitoring stack for the Kaizen OpenStack environment.
 
 - `thanos_sidecar`
 
-  Ships Prometheus metrics to a remote object store, and provide Thanos with access to local Prometheus data store.
+  Ships Prometheus metrics to a remote object store, and provide Thanos with
+  access to local Prometheus data store.
 
 - `thanos_store`
 
@@ -45,11 +47,21 @@ This sets up a Prometheus monitoring stack for the Kaizen OpenStack environment.
 
 - `thanos_query`
 
-  Allows PromQL queries against multiple sources.
+  Allows PromQL queries against multiple sources (specificaly, the prom_main
+  container and the thanos_store container).
 
 - `thanos_compactor`
 
   Downsamples data for better performance with long time ranges.
+
+## Exposed ports
+
+This compose stack provides services on the following ports:
+
+- `3000` -- Grafana
+- `9090` -- The `prom_main` prometheus instance
+- `9191` -- The `prom_archive` prometheus instance
+- `19192` -- The Thanos query instance
 
 ## Configuring
 
