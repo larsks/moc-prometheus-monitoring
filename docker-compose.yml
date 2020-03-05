@@ -120,3 +120,14 @@ services:
       --store thanos_store:19090
     ports:
       - 19192:19192
+
+  thanos_compactor:
+    image: thanosio/thanos
+    volumes:
+      - ./thanos:/etc/thanos
+    command: >-
+      compact
+      --data-dir /var/thanos/compact
+      --objstore.config-file /etc/thanos/bucket_config.yml
+      --http-address 0.0.0.0:19191
+      -w
