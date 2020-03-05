@@ -1,0 +1,59 @@
+This sets up a Prometheus monitoring stack for the Kaizen OpenStack environment.
+
+## Containers
+
+- `postgres`
+
+  This is a Postgres instance running TimescaleDB. It is a remote write destination for `prom_main` and a remote read source for `prom_archive`.
+
+- `postgres_exporter`
+
+  Exports postgres statistics for use by Prometheus.
+
+- `prom_pg_adapter`
+
+  This is the Prometheus remote read/write adapter for Postgres + TimescaleDB
+
+- `prom_main`
+
+  This is the main Prometheus instance. All scraping jobs are run from here.
+
+- `prom_archive`
+
+  This is a read-only Prometheus instance for testing queries against the TimescaleDB backend.
+
+- `grafana`
+
+  Visualization.
+
+- `cinder_exporter`
+
+  Exports information about Cinder volumes for consumption by Prometheus.
+
+- `keystone_exporter`
+
+  Exports information about Keystone projects and users for consumption by
+  Prometheus.
+
+- `thanos_sidecar`
+
+  Ships Prometheus metrics to a remote object store, and provide Thanos with access to local Prometheus data store.
+
+- `thanos_store`
+
+  Provides Thanos with read access to remote object store.
+
+- `thanos_query`
+
+  Allows PromQL queries against multiple sources.
+
+- `thanos_compactor`
+
+  Downsamples data for better performance with long time ranges.
+
+## Configuring
+
+- Provide admin OpenStack credentials in `openstack/clouds.yaml`
+- Set `POSTGRES_PASSWORD` in `.env`.
+- Set `OS_CLOUD` in `.env` to match a cloud name from `openstack/clouds.yaml`
+- Provide object store credentials in `thanos/bucket_config.yml`
