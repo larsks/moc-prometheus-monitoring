@@ -9,6 +9,10 @@ volumes:
     external: true
 
 services:
+
+  # This is a Postgres database running TimescaleDB
+  # extensions. It is used as a remote write destination
+  # by the prom_main container.
   postgres:
     image: timescale/pg_prometheus:latest-pg11
     environment:
@@ -22,6 +26,16 @@ services:
       retries: 10
     restart: always
 
+
+  # This is the Postgres adapter from TimescaleDB. It accepts
+  # data from Prometheus and writes it to the Postgres database.
+  prom_pg_adapter:
+    image: timescale/prometheus-postgresql-adapter:latest
+    command: >-
+      -pg-host=postgres -pg-password=${POSTGRES_PASSWORD} -log-level warn
+    restart: always
+
+  # Export Postgres metrics for consumption by Prometheus.
   postgres_exporter:
     image: wrouesnel/postgres_exporter
     environment:
@@ -32,12 +46,8 @@ services:
       PG_EXPORTER_AUTO_DISCOVER_DATABASES: "true"
       PG_EXPORTER_EXCLUDE_DATABASES: "template0,template1"
 
-  prom_pg_adapter:
-    image: timescale/prometheus-postgresql-adapter:latest
-    command: >-
-      -pg-host=postgres -pg-password=${POSTGRES_PASSWORD} -log-level warn
-    restart: always
-
+  # The main Prometheus instance. This runs all the scrape jobs and writes
+  # metrics to local storage and any remote write destinations.
   prom_main:
     image: prom/prometheus
     ports:
@@ -54,6 +64,8 @@ services:
       --storage.tsdb.min-block-duration=2h
       --storage.tsdb.max-block-duration=2h
 
+  # This is a read-only Prometheus instance that is configured to
+  # use postgres as a remote read source.
   prom_archive:
     image: prom/prometheus
     ports:
@@ -63,6 +75,7 @@ services:
       - "./prometheus_archive_config:/etc/prometheus"
     restart: always
 
+  # Hey look it's Grafana.
   grafana:
     image: grafana/grafana
     ports:
@@ -72,6 +85,7 @@ services:
       - "./grafana_provisioning:/etc/grafana/provisioning"
     restart: always
 
+  # Exports data about Cinder volumes.
   cinder_exporter:
     image: larsks/cinder-exporter
     volumes:
@@ -79,6 +93,7 @@ services:
     command: -v --os-cloud ${OS_CLOUD}
     restart: always
 
+  # Exports data about Keystone domains, projects, and users.
   keystone_exporter:
     image: larsks/keystone-exporter
     volumes:
@@ -86,6 +101,7 @@ services:
     command: -v --os-cloud ${OS_CLOUD}
     restart: always
 
+  # Exports data about hypervisors.
   nova_exporter:
     image: larsks/nova-exporter
     volumes:
@@ -93,6 +109,9 @@ services:
     command: -v --os-cloud ${OS_CLOUD}
     restart: always
 
+  # The sidecar ships data from the local Prometheus store to an object
+  # storage service and also provides the query server with access to the
+  # local data.
   thanos_sidecar:
     image: thanosio/thanos
     volumes:
@@ -107,6 +126,8 @@ services:
       --grpc-address 0.0.0.0:19090
     restart: always
 
+  # The Thanos store gateway provides the query server with access to
+  # data in the object store.
   thanos_store:
     image: thanosio/thanos
     volumes:
@@ -119,6 +140,9 @@ services:
       --grpc-address 0.0.0.0:19090
     restart: always
 
+  # The query server provides a Prometheus-compatible query API that
+  # aggregates data from multiple sources (specifically, the
+  # thanos_sidecar and thanos_store containers).
   thanos_query:
     image: thanosio/thanos
     command: >-
@@ -130,6 +154,8 @@ services:
       - 19192:19192
     restart: always
 
+  # Downsamples data in the object store to provide better performance
+  # when querying data in the past.
   thanos_compactor:
     image: thanosio/thanos
     volumes:
