@@ -51,6 +51,11 @@ scrape_configs:
       - targets:
           - frontend:8080
 
+  - job_name: 'victoria-metrics'
+    static_configs:
+      - targets:
+          - vmetrics:8428
+
   - job_name: 'thanos-store'
     static_configs:
       - targets:
@@ -197,3 +202,6 @@ scrape_configs:
         regex: (.*?)(:.*)?
         replacement: $1
         target_label: instance
+
+remote_write:
+  - url: http://vmetrics:8428/api/v1/write
