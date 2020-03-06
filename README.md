@@ -2,6 +2,15 @@ This sets up a Prometheus monitoring stack for the Kaizen OpenStack environment.
 
 ## Containers
 
+- `frontend`
+
+  This is a [Traefik][] frontend proxy. It is responsible for routing
+  requests to appropriate containers based on the request hostname,
+  and it manages requesting and renewing SSL certificates from
+  LetsEncrypt.
+
+  [traefik]: https://containo.us/traefik/
+
 - `prom_main`
 
   This is the main Prometheus instance. All scraping jobs are run from here.
@@ -43,14 +52,24 @@ This sets up a Prometheus monitoring stack for the Kaizen OpenStack environment.
 
   Downsamples data for better performance with long time ranges.
 
-## Exposed ports
+## Exposed services
 
-This compose stack provides services on the following ports:
+This compose stack provides the following services:
 
-- `3000` -- Grafana
-- `9090` -- The `prom_main` prometheus instance
-- `9191` -- The `prom_archive` prometheus instance
-- `19192` -- The Thanos query instance
+- <https://grafana.promtest.massopen.cloud>
+
+  This is the Grafana UI. The password for the `admin` user is in
+  Bitwarden.
+
+- <https://thanos.promtest.massopen.cloud>
+
+  This is the Thanos query UI. It's a good place to experiment with
+  PromQL queries.
+
+- <https://prom.promtest.massopen.cloud>
+
+  This is the actual Prometheus instance from the `prom_main`
+  container.
 
 ## Configuring
 
