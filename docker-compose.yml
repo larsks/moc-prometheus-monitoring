@@ -5,6 +5,11 @@ volumes:
   prometheus_data_main:
   prometheus_run:
   traefik_data:
+
+  # We mark the grafana_data volume as "external" so that it
+  # doesn't get deleted when we run "docker-compose down -v"
+  # (note that this means you must creat the volume before
+  # bringing up the compose stack).
   grafana_data:
     external: true
 
