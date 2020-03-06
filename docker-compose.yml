@@ -4,10 +4,23 @@ version: "3"
 volumes:
   prometheus_data_main:
   prometheus_run:
+  traefik_data:
   grafana_data:
     external: true
 
 services:
+  frontend:
+    image: traefik:v2.2
+    command: >-
+      --configfile /etc/traefik/traefik.yml
+    ports:
+      - "443:443"
+      - "80:80"
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - "./data/traefik/traefik.yml:/etc/traefik/traefik.yml"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "traefik_data:/data/traefik"
 
   # The main Prometheus instance. This runs all the scrape jobs and writes
   # metrics to local storage and any remote write destinations.
@@ -27,6 +40,13 @@ services:
       --web.console.templates=/usr/share/prometheus/consoles
       --storage.tsdb.min-block-duration=2h
       --storage.tsdb.max-block-duration=2h
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.prom_main.rule=Host(`prom.promtest.massopen.cloud`)
+      - traefik.http.services.prom_main.loadbalancer.server.port=9090
+      - traefik.tls=true
+      - traefik.http.routers.prom_main.tls.certresolver=letsEncrypt
+
 
   # Discover the address of the Docker host and make it available
   # to Prometheus via file-based service discovery.
@@ -47,6 +67,12 @@ services:
       - "grafana_data:/var/lib/grafana"
       - "./data/grafana/provisioning:/etc/grafana/provisioning"
     restart: always
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.grafana.rule=Host(`grafana.promtest.massopen.cloud`)
+      - traefik.http.services.grafana.loadbalancer.server.port=3000
+      - traefik.tls=true
+      - traefik.http.routers.grafana.tls.certresolver=letsEncrypt
 
   # Regularly backup Grafana database
   grafana_backup:
@@ -127,6 +153,12 @@ services:
     ports:
       - 19192:19192
     restart: always
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.thanos_query.rule=Host(`thanos.promtest.massopen.cloud`)
+      - traefik.http.services.thanos_query.loadbalancer.server.port=19192
+      - traefik.tls=true
+      - traefik.http.routers.thanos_query.tls.certresolver=letsEncrypt
 
   # Downsamples data in the object store to provide better performance
   # when querying data in the past.

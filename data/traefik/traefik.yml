@@ -1,0 +1,25 @@
+---
+entryPoints:
+  http:
+    address: :80
+  https:
+    address: :443
+
+certificatesResolvers:
+  letsEncrypt:
+    acme:
+      email: lars@redhat.com
+      storage: /data/traefik/acme.json
+      httpChallenge:
+        entryPoint: http
+
+providers:
+  docker:
+    exposedByDefault: false
+
+metrics:
+  prometheus: true
+
+api:
+  dashboard: true
+  insecure: true
