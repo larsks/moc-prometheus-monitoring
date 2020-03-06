@@ -1,0 +1,39 @@
+---
+- hosts: localhost
+  gather_facts: false
+  vars:
+    prom_targets_file: /run/prometheus/targets.json
+
+  tasks:
+    - name: get route table
+      command: ip route
+      register: route
+
+    - name: get default route
+      set_fact:
+        default_route: "{{ route.stdout_lines|select('match', '^default ')|first }}"
+
+    - name: get default gw
+      set_fact:
+        default_gw: "{{ default_route.split()[2] }}"
+
+    - name: generate file sd config
+      set_fact:
+        file_sd_config:
+          - labels:
+              job: local-node
+          - targets:
+              - "{{ default_gw }}:9100"
+
+    - name: ensure destination directory exists
+      file:
+        path: "{{ prom_targets_file|dirname }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: write file sd config
+      copy:
+        content: "{{ file_sd_config|to_nice_json }}"
+        dest: "{{ prom_targets_file }}"

@@ -1,9 +1,16 @@
 ---
-# my global config
 global:
+
+  # Set the scrape interval for jobs that do not
+  # have an explicit scrape interval setting.
   scrape_interval: 60s
   evaluation_interval: 60s
 
+  # Thanos requires each Prometheus instance to be uniquely identified
+  # by its external_labels. We pretend that we have multiple
+  # Prometheus clusters identified with "promcluster_name", and in
+  # each cluster multiple Prometheus instances identified by a replica
+  # index.
   external_labels:
     promcluster_name: moctest
     promcluster_replica: 0
@@ -21,13 +28,23 @@ rule_files:
 # - "first_rules.yml"
 # - "second_rules.yml"
 
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
       - targets:
           - localhost:9090
+
+  # This job scrapes node_exporter on the host running
+  # the docker-compose stack.
+  - job_name: 'local-node'
+    file_sd_configs:
+      - files:
+          - /run/prometheus/targets.json
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: (.*?)(:.*)?
+        replacement: $1
+        target_label: instance
 
   - job_name: 'thanos-store'
     static_configs:
@@ -48,16 +65,6 @@ scrape_configs:
     static_configs:
       - targets:
           - thanos_query:19192
-
-  - job_name: 'local-node'
-    static_configs:
-      - targets:
-          - 172.16.0.250:9100
-    relabel_configs:
-      - source_labels: [__address__]
-        regex: (.*?)(:.*)?
-        replacement: $1
-        target_label: instance
 
   - job_name: 'openstack-slow'
     scrape_interval: 15m

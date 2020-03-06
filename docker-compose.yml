@@ -5,6 +5,7 @@ volumes:
   postgres_data:
   prometheus_data_main:
   prometheus_data_archive:
+  prometheus_run:
   grafana_data:
     external: true
 
@@ -54,7 +55,8 @@ services:
       - "9090:9090"
     volumes:
       - "prometheus_data_main:/prometheus"
-      - "./prometheus_main_config:/etc/prometheus"
+      - "prometheus_run:/run/prometheus"
+      - "./data/prom_main/prometheus.yml:/etc/prometheus/prometheus.yml"
     restart: always
     command: >-
       --config.file=/etc/prometheus/prometheus.yml
@@ -64,6 +66,14 @@ services:
       --storage.tsdb.min-block-duration=2h
       --storage.tsdb.max-block-duration=2h
 
+  prom_host_discovery:
+    build:
+      context: build/ansible
+    volumes:
+      - "prometheus_run:/run/prometheus"
+      - "./data/ansible:/data/ansible"
+    command: ansible-playbook /data/ansible/discover-host.yml
+
   # This is a read-only Prometheus instance that is configured to
   # use postgres as a remote read source.
   prom_archive:
@@ -72,7 +82,7 @@ services:
       - "9191:9090"
     volumes:
       - "prometheus_data_archive:/prometheus"
-      - "./prometheus_archive_config:/etc/prometheus"
+      - "./data/prom_archive/prometheus.yml:/etc/prometheus/prometheus.yml"
     restart: always
 
   # Hey look it's Grafana.
@@ -82,7 +92,7 @@ services:
       - "3000:3000"
     volumes:
       - "grafana_data:/var/lib/grafana"
-      - "./grafana_provisioning:/etc/grafana/provisioning"
+      - "./data/grafana/provisioning:/etc/grafana/provisioning"
     restart: always
 
   # Exports data about Cinder volumes.
