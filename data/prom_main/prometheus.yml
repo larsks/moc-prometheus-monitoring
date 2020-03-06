@@ -46,6 +46,11 @@ scrape_configs:
         replacement: $1
         target_label: instance
 
+  - job_name: 'traefik'
+    static_configs:
+      - targets:
+          - frontend:8080
+
   - job_name: 'thanos-store'
     static_configs:
       - targets:
