@@ -4,7 +4,9 @@ This sets up a Prometheus monitoring stack for the Kaizen OpenStack environment.
 
 - `postgres`
 
-  This is a Postgres instance running TimescaleDB. It is a remote write destination for `prom_main` and a remote read source for `prom_archive`.
+  This is a Postgres instance running TimescaleDB. It is a remote
+  write destination for `prom_main` and a remote read source for
+  `prom_archive`.
 
 - `postgres_exporter`
 
@@ -12,11 +14,18 @@ This sets up a Prometheus monitoring stack for the Kaizen OpenStack environment.
 
 - `prom_pg_adapter`
 
-  This is the Prometheus remote read/write adapter for Postgres + TimescaleDB
+  This is the Prometheus remote read/write adapter for Postgres +
+  TimescaleDB
 
 - `prom_main`
 
   This is the main Prometheus instance. All scraping jobs are run from here.
+
+- `prom_host_discovery`
+
+  This is a utility container that gets the address of the docker host
+  and writes it to a file so that Prometheus is able to query the
+  local node exporter.
 
 - `prom_archive`
 

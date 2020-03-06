@@ -66,6 +66,8 @@ services:
       --storage.tsdb.min-block-duration=2h
       --storage.tsdb.max-block-duration=2h
 
+  # Discover the address of the Docker host and make it available
+  # to Prometheus via file-based service discovery.
   prom_host_discovery:
     build:
       context: build/ansible
