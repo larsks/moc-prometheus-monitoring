@@ -23,7 +23,7 @@ services:
       - "80:80"
       - "127.0.0.1:8080:8080"
     volumes:
-      - "./data/traefik/traefik.yml:/etc/traefik/traefik.yml"
+      - "./data/traefik:/etc/traefik"
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "traefik_data:/data/traefik"
 
