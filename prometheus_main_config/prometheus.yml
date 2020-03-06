@@ -79,10 +79,14 @@ scrape_configs:
       - targets:
           - postgres_exporter:9187
 
-  - job_name: 'overcloud-node'
+  - job_name: 'undercloud'
     static_configs:
       - targets:
           - kzn-undercloud.kzn.moc:9100
+
+  - job_name: 'overcloud-compute'
+    static_configs:
+      - targets:
           - neu-17-8-fpga.kzn.moc:9100
           - neu-19-8-fpga.kzn.moc:9100
           - neu-15-12-gcomp.kzn.moc:9100
@@ -113,9 +117,27 @@ scrape_configs:
           - neu-5-36-stackcomp.kzn.moc:9100
           - neu-5-37-stackcomp.kzn.moc:9100
           - neu-5-38-stackcomp.kzn.moc:9100
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: (.*?)(:.*)?
+        replacement: $1
+        target_label: instance
+
+  - job_name: 'overcloud-controller'
+    static_configs:
+      - targets:
           - neu-15-39-control1.kzn.moc:9100
           - neu-3-39-control3.kzn.moc:9100
           - neu-5-39-control2.kzn.moc:9100
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: (.*?)(:.*)?
+        replacement: $1
+        target_label: instance
+
+  - job_name: 'overcloud-networker'
+    static_configs:
+      - targets:
           - neu-17-11-nc2.kzn.moc:9100
           - neu-19-11-nc1.kzn.moc:9100
     relabel_configs:
