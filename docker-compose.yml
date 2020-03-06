@@ -51,7 +51,7 @@ services:
       - traefik.http.services.prom_main.loadbalancer.server.port=9090
       - traefik.tls=true
       - traefik.http.routers.prom_main.tls.certresolver=letsEncrypt
-      - traefik.http.routers.prom_main.middlewares=moc_auth
+      - traefik.http.routers.prom_main.middlewares=moc_auth@file
 
 
   # Discover the address of the Docker host and make it available
@@ -165,7 +165,7 @@ services:
       - traefik.http.services.thanos_query.loadbalancer.server.port=19192
       - traefik.tls=true
       - traefik.http.routers.thanos_query.tls.certresolver=letsEncrypt
-      - traefik.http.routers.thanos_query.middlewares=moc_auth
+      - traefik.http.routers.thanos_query.middlewares=moc_auth@file
 
   # Downsamples data in the object store to provide better performance
   # when querying data in the past.
