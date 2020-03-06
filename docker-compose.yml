@@ -27,7 +27,7 @@ services:
   prom_main:
     image: prom/prometheus
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     volumes:
       - "prometheus_data_main:/prometheus"
       - "prometheus_run:/run/prometheus"
@@ -62,7 +62,7 @@ services:
   grafana:
     image: grafana/grafana
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     volumes:
       - "grafana_data:/var/lib/grafana"
       - "./data/grafana/provisioning:/etc/grafana/provisioning"
@@ -151,7 +151,7 @@ services:
       --store thanos_sidecar:19090
       --store thanos_store:19090
     ports:
-      - 19192:19192
+      - "127.0.0.1:19192:19192"
     restart: always
     labels:
       - traefik.enable=true
