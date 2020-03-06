@@ -54,7 +54,8 @@ services:
       context: build/cron
     volumes:
       - "grafana_data:/var/lib/grafana"
-      - "./data/grafana/periodic:/etc/periodic"
+      - "./data/grafana/periodic/hourly:/etc/periodic/hourly"
+      - "./data/grafana/periodic/daily:/etc/periodic/daily"
       - "./data/grafana/backup-file.sh:/etc/scripts/backup-file.sh"
     restart: always
 
