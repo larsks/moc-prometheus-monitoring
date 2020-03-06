@@ -6,6 +6,7 @@ volumes:
   prometheus_data_main:
   prometheus_data_archive:
   grafana_data:
+    external: true
 
 services:
   postgres:
