@@ -23,3 +23,26 @@ metrics:
 api:
   dashboard: true
   insecure: true
+
+http:
+  routers:
+    http_catchall:
+      entryPoints:
+        - http
+      middlewares:
+        - https_redirect
+      rule: "HostRegexp(`{any:.+}`)"
+      service: noop
+
+  services:
+    # noop service, the URL will be never called
+    noop:
+      loadBalancer:
+        servers:
+          - url: http://192.168.0.1:1337
+
+  middlewares:
+    https_redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true

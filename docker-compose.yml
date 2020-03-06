@@ -69,9 +69,9 @@ services:
     restart: always
     labels:
       - traefik.enable=true
+      - traefik.tls=true
       - traefik.http.routers.grafana.rule=Host(`grafana.promtest.massopen.cloud`)
       - traefik.http.services.grafana.loadbalancer.server.port=3000
-      - traefik.tls=true
       - traefik.http.routers.grafana.tls.certresolver=letsEncrypt
 
   # Regularly backup Grafana database
