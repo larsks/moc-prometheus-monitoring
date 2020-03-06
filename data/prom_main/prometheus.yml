@@ -66,15 +66,21 @@ scrape_configs:
       - targets:
           - thanos_query:19192
 
-  - job_name: 'openstack-slow'
+  - job_name: 'openstack-cinder'
     scrape_interval: 15m
     scrape_timeout: 60s
     static_configs:
       - targets:
           - cinder_exporter:5112
+
+  - job_name: 'openstack-keystone'
+    scrape_interval: 15m
+    scrape_timeout: 60s
+    static_configs:
+      - targets:
           - keystone_exporter:5113
 
-  - job_name: 'openstack-fast'
+  - job_name: 'openstack-nova-hypervisors'
     scrape_interval: 60s
     scrape_timeout: 20s
     static_configs:
