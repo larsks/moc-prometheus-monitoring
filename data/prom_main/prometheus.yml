@@ -87,11 +87,6 @@ scrape_configs:
       - targets:
           - nova_exporter:5114
 
-  - job_name: 'postgres'
-    static_configs:
-      - targets:
-          - postgres_exporter:9187
-
   - job_name: 'undercloud'
     static_configs:
       - targets:
@@ -197,6 +192,3 @@ scrape_configs:
         regex: (.*?)(:.*)?
         replacement: $1
         target_label: instance
-
-remote_write:
-  - url: "http://prom_pg_adapter:9201/write"

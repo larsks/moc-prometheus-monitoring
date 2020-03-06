@@ -10,8 +10,3 @@ datasources:
     type: prometheus
     access: proxy
     url: http://prom_main:9090
-
-  - name: Prometheus (Timescale)
-    type: prometheus
-    access: proxy
-    url: http://prom_archive:9090

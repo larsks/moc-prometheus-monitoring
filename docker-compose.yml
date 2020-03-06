@@ -2,50 +2,12 @@
 version: "3"
 
 volumes:
-  postgres_data:
   prometheus_data_main:
-  prometheus_data_archive:
   prometheus_run:
   grafana_data:
     external: true
 
 services:
-
-  # This is a Postgres database running TimescaleDB
-  # extensions. It is used as a remote write destination
-  # by the prom_main container.
-  postgres:
-    image: timescale/pg_prometheus:latest-pg11
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - "postgres_data:/var/lib/postgresql/data"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 1s
-      timeout: 5s
-      retries: 10
-    restart: always
-
-
-  # This is the Postgres adapter from TimescaleDB. It accepts
-  # data from Prometheus and writes it to the Postgres database.
-  prom_pg_adapter:
-    image: timescale/prometheus-postgresql-adapter:latest
-    command: >-
-      -pg-host=postgres -pg-password=${POSTGRES_PASSWORD} -log-level warn
-    restart: always
-
-  # Export Postgres metrics for consumption by Prometheus.
-  postgres_exporter:
-    image: wrouesnel/postgres_exporter
-    environment:
-      DATA_SOURCE_URI: "postgres?sslmode=disable"
-      DATA_SOURCE_USER: "postgres"
-      DATA_SOURCE_PASS: "${POSTGRES_PASSWORD}"
-      DATA_SOURCE_WEB_LISTEN_ADDRESS: ":9187"
-      PG_EXPORTER_AUTO_DISCOVER_DATABASES: "true"
-      PG_EXPORTER_EXCLUDE_DATABASES: "template0,template1"
 
   # The main Prometheus instance. This runs all the scrape jobs and writes
   # metrics to local storage and any remote write destinations.
@@ -75,17 +37,6 @@ services:
       - "prometheus_run:/run/prometheus"
       - "./data/ansible:/data/ansible"
     command: ansible-playbook /data/ansible/discover-host.yml
-
-  # This is a read-only Prometheus instance that is configured to
-  # use postgres as a remote read source.
-  prom_archive:
-    image: prom/prometheus
-    ports:
-      - "9191:9090"
-    volumes:
-      - "prometheus_data_archive:/prometheus"
-      - "./data/prom_archive/prometheus.yml:/etc/prometheus/prometheus.yml"
-    restart: always
 
   # Hey look it's Grafana.
   grafana:
