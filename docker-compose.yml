@@ -48,6 +48,16 @@ services:
       - "./data/grafana/provisioning:/etc/grafana/provisioning"
     restart: always
 
+  # Regularly backup Grafana database
+  grafana_backup:
+    build:
+      context: build/cron
+    volumes:
+      - "grafana_data:/var/lib/grafana"
+      - "./data/grafana/periodic:/etc/periodic"
+      - "./data/grafana/backup-file.sh:/etc/scripts/backup-file.sh"
+    restart: always
+
   # Exports data about Cinder volumes.
   cinder_exporter:
     image: larsks/cinder-exporter
