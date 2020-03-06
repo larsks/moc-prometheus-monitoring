@@ -9,6 +9,11 @@ volumes:
     external: true
 
 services:
+
+  # The Traefik frontend proxy is responsible for routing requests
+  # to backend containers based on rules registered via container
+  # labels. In this configuration, we rely on the request hostname to
+  # select the appropriate backend.
   frontend:
     image: traefik:v2.2
     command: >-
