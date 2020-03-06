@@ -46,3 +46,7 @@ http:
       redirectScheme:
         scheme: https
         permanent: true
+
+    moc_auth:
+      basicAuth:
+        usersFile: /etc/traefik/users
