@@ -1,0 +1,66 @@
+---
+version: "3"
+
+volumes:
+  prometheus_data_main:
+  prometheus_run:
+  vmetrics_data:
+
+services:
+
+  # The Thanos store gateway provides the query server with access to
+  # data in the object store.
+  thanos_store:
+    image: thanosio/thanos
+    volumes:
+      - ./thanos:/etc/thanos
+    command: >-
+      store
+      --data-dir /var/thanos/cache
+      --objstore.config-file /etc/thanos/bucket_config.yml
+      --http-address 0.0.0.0:19191
+      --grpc-address 0.0.0.0:19090
+    restart: always
+
+  # The query server provides a Prometheus-compatible query API that
+  # aggregates data from multiple sources (specifically, the
+  # thanos_sidecar and thanos_store containers).
+  thanos_query:
+    image: thanosio/thanos
+    command: >-
+      query
+      --http-address 0.0.0.0:19192
+      --store thanos_sidecar:19090
+      --store thanos_store:19090
+    ports:
+      - "127.0.0.1:19192:19192"
+    restart: always
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.thanos_query.rule=Host(`thanos.promtest.massopen.cloud`)
+      - traefik.http.services.thanos_query.loadbalancer.server.port=19192
+      - traefik.tls=true
+      - traefik.http.routers.thanos_query.tls.certresolver=letsEncrypt
+      - traefik.http.routers.thanos_query.middlewares=moc_auth@file
+
+  # Downsamples data in the object store to provide better performance
+  # when querying data in the past.
+  thanos_compactor:
+    image: thanosio/thanos
+    volumes:
+      - ./thanos:/etc/thanos
+    command: >-
+      compact
+      --data-dir /var/thanos/compact
+      --objstore.config-file /etc/thanos/bucket_config.yml
+      --http-address 0.0.0.0:19191
+      -w
+    restart: always
+
+  vmetrics:
+    image: victoriametrics/victoria-metrics
+    volumes:
+      - vmetrics_data:/data/vmetrics
+    command: >-
+      -storageDataPath /data/vmetrics
+      -retentionPeriod 6

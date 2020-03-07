@@ -1,0 +1,86 @@
+---
+version: "3"
+
+volumes:
+  prometheus_data_main:
+  prometheus_run:
+
+services:
+
+  # The main Prometheus instance. This runs all the scrape jobs and writes
+  # metrics to local storage and any remote write destinations.
+  prom_main:
+    image: prom/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - "prometheus_data_main:/prometheus"
+      - "prometheus_run:/run/prometheus"
+      - "./data/prom_main/prometheus.yml:/etc/prometheus/prometheus.yml"
+    restart: always
+    command: >-
+      --config.file=/etc/prometheus/prometheus.yml
+      --storage.tsdb.path=/prometheus
+      --web.console.libraries=/usr/share/prometheus/console_libraries
+      --web.console.templates=/usr/share/prometheus/consoles
+      --storage.tsdb.min-block-duration=2h
+      --storage.tsdb.max-block-duration=2h
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.prom_main.rule=Host(`prom.promtest.massopen.cloud`)
+      - traefik.http.services.prom_main.loadbalancer.server.port=9090
+      - traefik.tls=true
+      - traefik.http.routers.prom_main.tls.certresolver=letsEncrypt
+      - traefik.http.routers.prom_main.middlewares=moc_auth@file
+
+
+  # Discover the address of the Docker host and make it available
+  # to Prometheus via file-based service discovery.
+  prom_host_discovery:
+    build:
+      context: build/ansible
+    volumes:
+      - "prometheus_run:/run/prometheus"
+      - "./data/ansible:/data/ansible"
+    command: ansible-playbook /data/ansible/discover-host.yml
+
+  # Exports data about Cinder volumes.
+  cinder_exporter:
+    image: larsks/cinder-exporter
+    volumes:
+      - ./openstack:/etc/openstack
+    command: -v --os-cloud ${OS_CLOUD}
+    restart: always
+
+  # Exports data about Keystone domains, projects, and users.
+  keystone_exporter:
+    image: larsks/keystone-exporter
+    volumes:
+      - ./openstack:/etc/openstack
+    command: -v --os-cloud ${OS_CLOUD}
+    restart: always
+
+  # Exports data about hypervisors.
+  nova_exporter:
+    image: larsks/nova-exporter
+    volumes:
+      - ./openstack:/etc/openstack
+    command: -v --os-cloud ${OS_CLOUD}
+    restart: always
+
+  # The sidecar ships data from the local Prometheus store to an object
+  # storage service and also provides the query server with access to the
+  # local data.
+  thanos_sidecar:
+    image: thanosio/thanos
+    volumes:
+      - prometheus_data_main:/prometheus
+      - ./thanos:/etc/thanos
+    command: >-
+      sidecar
+      --prometheus.url http://prom_main:9090
+      --tsdb.path /prometheus
+      --objstore.config-file /etc/thanos/bucket_config.yml
+      --http-address 0.0.0.0:19191
+      --grpc-address 0.0.0.0:19090
+    restart: always

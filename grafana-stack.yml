@@ -1,0 +1,33 @@
+---
+version: "3"
+
+volumes:
+  grafana_data:
+
+services:
+  # Hey look it's Grafana.
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - "grafana_data:/var/lib/grafana"
+      - "./data/grafana/provisioning:/etc/grafana/provisioning"
+    restart: always
+    labels:
+      - traefik.enable=true
+      - traefik.tls=true
+      - traefik.http.routers.grafana.rule=Host(`grafana.promtest.massopen.cloud`)
+      - traefik.http.services.grafana.loadbalancer.server.port=3000
+      - traefik.http.routers.grafana.tls.certresolver=letsEncrypt
+
+  # Regularly backup Grafana database
+  grafana_backup:
+    build:
+      context: build/cron
+    volumes:
+      - "grafana_data:/var/lib/grafana"
+      - "./data/grafana/periodic/hourly:/etc/periodic/hourly"
+      - "./data/grafana/periodic/daily:/etc/periodic/daily"
+      - "./data/grafana/backup-file.sh:/etc/scripts/backup-file.sh"
+    restart: always
