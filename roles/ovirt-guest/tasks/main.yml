@@ -1,0 +1,11 @@
+---
+- name: install guest agent
+  package:
+    name: "{{ ovirt_guest_packages }}"
+    state: installed
+
+- name: activate guest agent
+  service:
+    name: qemu-guest-agent
+    state: started
+    enabled: true

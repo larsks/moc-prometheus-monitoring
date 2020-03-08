@@ -1,0 +1,5 @@
+---
+- name: refresh interface
+  shell: |
+    ifdown {{ iface.name }}
+    ifup {{ iface.name }}

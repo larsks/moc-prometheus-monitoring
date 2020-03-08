@@ -1,0 +1,4 @@
+create prom_cluster hash:ip
+{% for host in groups.prometheus %}
+add prom_cluster {{ hostvars[host].ansible_eth0.ipv4.address }}
+{% endfor %}

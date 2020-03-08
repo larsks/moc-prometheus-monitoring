@@ -1,0 +1,35 @@
+---
+- name: check for docker-ce repository
+  stat:
+    path: /etc/yum.repos.d/docker-ce.repo
+  register: docker_ce_stat
+
+- name: install docker-ce repository
+  command: >-
+    dnf config-manager --add-repo {{ docker_ce_repo }}
+  when: not docker_ce_stat.stat.exists
+
+- name: install docker
+  package:
+    name: "{{ docker_host_packages }}"
+    state: installed
+
+- name: ensure docker config directory exists
+  file:
+    path: /etc/docker
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: configure docker
+  template:
+    src: daemon.j2.json
+    dest: /etc/docker/daemon.json
+  notify: restart docker
+
+- name: activate docker
+  service:
+    name: docker
+    state: started
+    enabled: true

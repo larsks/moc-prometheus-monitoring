@@ -1,0 +1,10 @@
+---
+- name: reload ipset
+  service:
+    name: ipset
+    state: restarted
+
+- name: reload iptables
+  service:
+    name: iptables
+    state: restarted

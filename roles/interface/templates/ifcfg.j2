@@ -1,0 +1,16 @@
+NAME={{ iface.name }}
+DEVICE={{ iface.device }}
+TYPE={{ iface.type|default('Ethernet') }}
+ONBOOT={{ iface.onboot|default('yes') }}
+{% if iface.ipaddr is defined %}
+IPADDR={{ iface.ipaddr|ipaddr('address') }}
+PREFIX={{ iface.ipaddr|ipaddr('prefix') }}
+BOOTPROTO=none
+{% else %}
+BOOTPROTO={{ iface.bootproto|default('dhcp') }}
+{% endif %}
+DEFROUTE={% if iface.defroute|default(true) %}yes{% else %}no{% endif %}
+
+{% if iface.gateway is defined %}
+GATEWAY={{ iface.gateway }}
+{% endif %}

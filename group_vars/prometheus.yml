@@ -1,0 +1,5 @@
+---
+monitor_authorized_keys:
+  - https://github.com/larsks.keys
+  - https://github.com/naved001.keys
+  - https://github.com/radonm.keys

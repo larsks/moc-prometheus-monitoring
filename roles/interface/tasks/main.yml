@@ -1,0 +1,6 @@
+---
+- name: create interface template
+  template:
+    src: ifcfg.j2
+    dest: /etc/sysconfig/network-scripts/ifcfg-{{ iface.name }}
+  notify: refresh interface

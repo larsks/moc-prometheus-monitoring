@@ -1,0 +1,14 @@
+---
+- name: check if swarm is active
+  command: >-
+    docker node ls
+  register: swarmcheck
+  failed_when: false
+  changed_when: swarmcheck.rc != 0
+
+- name: join docker swarm
+  command: >-
+    docker swarm join --token
+    {{ hostvars[groups.prometheus.0].join_token.stdout }}
+    {{ hostvars[groups.prometheus.0].ansible_eth0.ipv4.address }}:2377
+  when: swarmcheck is changed

@@ -1,0 +1,22 @@
+---
+- name: grant sudo access to members of monitor group
+  copy:
+    dest: /etc/sudoers.d/monitor
+    content: |
+      %monitor        ALL=(ALL)       NOPASSWD: ALL
+    owner: root
+    group: root
+    mode: "0440"
+
+- name: create monitor user
+  user:
+    name: monitor
+    comment: Monitor User
+    groups: docker
+
+- name: install monitor user authorized keys
+  authorized_key:
+    user: monitor
+    state: present
+    key: "{{ item }}"
+  loop: "{{ monitor_authorized_keys }}"

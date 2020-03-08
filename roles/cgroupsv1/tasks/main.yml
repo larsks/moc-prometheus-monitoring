@@ -1,0 +1,13 @@
+---
+- name: disable cgroups v2
+  command: >-
+    sed -i
+    -e '/^GRUB_CMDLINE_LINUX/ s/ systemd.unified_cgroup_hierarchy=0//g'
+    -e '/^GRUB_CMDLINE_LINUX/ s/"$/ systemd.unified_cgroup_hierarchy=0"/'
+    /etc/default/grub
+  register: sed
+
+- name: update boot config
+  when: sed is changed
+  command: >-
+    grub2-mkconfig -o /boot/grub2/grub.cfg

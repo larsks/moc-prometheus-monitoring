@@ -1,0 +1,3 @@
+---
+ovirt_guest_packages:
+  - qemu-guest-agent

@@ -1,0 +1,17 @@
+---
+- name: check system hostname
+  command: >-
+    hostname
+  register: hostname
+  changed_when: false
+
+- name: set hostname to match inventory
+  command: >-
+    hostnamectl set-hostname {{ inventory_hostname }}
+  when: >-
+    hostname.stdout != inventory_hostname
+
+- name: install common packages
+  package:
+    name: "{{ common_packages }}"
+    state: installed

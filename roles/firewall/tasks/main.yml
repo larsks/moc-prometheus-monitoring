@@ -1,0 +1,34 @@
+---
+- name: install packages
+  package:
+    name: "{{ firewall_packages }}"
+    state: installed
+
+- name: remove firewalld
+  package:
+    name: firewalld
+    state: absent
+
+- name: enable iptables service
+  service:
+    name: iptables
+    state: started
+    enabled: true
+
+- name: enable ipset service
+  service:
+    name: ipset
+    state: started
+    enabled: true
+
+- name: configure prom_cluster ipset
+  template:
+    src: ipset.j2
+    dest: /etc/ipset/ipset
+  notify: reload ipset
+
+- name: configure iptables
+  template:
+    src: iptables.j2
+    dest: /etc/sysconfig/iptables
+  notify: reload iptables

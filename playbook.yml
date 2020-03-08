@@ -1,19 +1,39 @@
-# This playbook installs the Prometheus node-exporter and our custom
-# libvirt-exporter on Kaizen.
 ---
-- hosts: undercloud
-  gather_facts: false
-  roles:
-    - node_exporter/service
-    - machine_role
+- hosts: prometheus
+  tags: [facts]
 
-- hosts: overcloud
-  gather_facts: false
+- hosts: prometheus
+  tags: [common]
   roles:
-    - node_exporter/service
-    - machine_role
+    - common
+    - ovirt-guest
+    - cgroupsv1
+    - node-exporter
 
-- hosts: compute
-  gather_facts: false
+- hosts: prometheus
+  tags: [network]
   roles:
-    - libvirt_exporter
+    - firewall
+    - public-interface
+
+- hosts: prometheus
+  tags: [storage]
+  roles:
+    - lvm
+
+- hosts: prometheus[0]
+  tags: [docker,docker-manager]
+  roles:
+    - docker-host
+    - docker-swarm/manager
+
+- hosts: prometheus[1:]
+  tags: [docker,docker-worker]
+  roles:
+    - docker-host
+    - docker-swarm/worker
+
+- hosts: prometheus
+  tags: [user]
+  roles:
+    - monitor-user

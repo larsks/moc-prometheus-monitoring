@@ -1,0 +1,38 @@
+---
+- name: configure internal interface
+  include_role:
+    name: interface
+  vars:
+    iface:
+      name: internal
+      bootproto: dhcp
+      device: eth0
+      defroute: false
+
+- meta: flush_handlers
+
+- name: configure public interface
+  include_role:
+    name: interface
+  vars:
+    iface:
+      name: public
+      ipaddr: "{{ public_ip }}"
+      device: eth1
+      gateway: "{{ public_gateway }}"
+
+- name: check if connection exists
+  command: >-
+    nmcli c show "{{ item }}"
+  register: nmcli
+  failed_when: false
+  changed_when: nmcli.rc == 0
+  loop:
+    - 'Wired connection 1'
+    - 'Wired connection 2'
+
+- name: delete connection
+  command: >-
+    nmcli c delete "{{ item.item }}"
+  when: item is changed
+  loop: "{{ nmcli.results }}"

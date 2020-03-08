@@ -1,0 +1,69 @@
+---
+- name: check if vdb is a pv
+  command: >-
+    pvs /dev/vdb
+  register: pvcheck
+  failed_when: false
+  changed_when: pvcheck.rc != 0
+
+- name: create pv on /dev/vdb
+  command: >-
+    pvcreate /dev/vdb
+  when: pvcheck is changed
+
+- name: check if vg tank exists
+  command: >-
+    vgs tank
+  register: vgcheck
+  failed_when: false
+  changed_when: vgcheck.rc != 0
+
+- name: create vg on /dev/vdb
+  command: >-
+    vgcreate tank /dev/vdb
+  when: vgcheck is changed
+
+- name: check if thinpool pool01 exists
+  command: >-
+    lvs tank/pool01
+  register: poolcheck
+  failed_when: false
+  changed_when: poolcheck.rc != 0
+
+- name: create thinpool pool01
+  command: >-
+    lvcreate -n pool01 -l 100%FREE -T tank
+  when: poolcheck is changed
+
+- name: check if lv docker exists
+  command: >-
+    lvs tank/docker
+  register: lvcheck
+  failed_when: false
+  changed_when: lvcheck.rc != 0
+
+- name: create lv docker
+  command: >-
+    lvcreate -V100g -n docker -T tank/pool01
+  when: lvcheck is changed
+
+- name: check if lv docker is formatted
+  command: >-
+    blkid /dev/tank/docker
+  register: blkid
+  failed_when: false
+  changed_when: blkid.rc != 0
+
+- name: create filesystem on lv docker
+  command:
+    mkfs.ext4 -m 0 /dev/tank/docker
+  when: >-
+    blkid is changed or 'TYPE=' not in blkid.stdout
+
+- name: ensure docker filesystem is mounted
+  mount:
+    path: /var/lib/docker
+    src: /dev/tank/docker
+    fstype: ext4
+    opts: defaults
+    state: mounted
