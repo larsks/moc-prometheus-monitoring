@@ -12,7 +12,7 @@ services:
   prom_main:
     image: prom/prometheus
     ports:
-      - "127.0.0.1:9090:9090"
+      - "9090:9090"
     volumes:
       - "prometheus_data_main:/prometheus"
       - "prometheus_run:/run/prometheus"
@@ -25,24 +25,6 @@ services:
       --web.console.templates=/usr/share/prometheus/consoles
       --storage.tsdb.min-block-duration=2h
       --storage.tsdb.max-block-duration=2h
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.prom_main.rule=Host(`prom.promtest.massopen.cloud`)
-      - traefik.http.services.prom_main.loadbalancer.server.port=9090
-      - traefik.tls=true
-      - traefik.http.routers.prom_main.tls.certresolver=letsEncrypt
-      - traefik.http.routers.prom_main.middlewares=moc_auth@file
-
-
-  # Discover the address of the Docker host and make it available
-  # to Prometheus via file-based service discovery.
-  prom_host_discovery:
-    build:
-      context: build/ansible
-    volumes:
-      - "prometheus_run:/run/prometheus"
-      - "./data/ansible:/data/ansible"
-    command: ansible-playbook /data/ansible/discover-host.yml
 
   # Exports data about Cinder volumes.
   cinder_exporter:
@@ -81,6 +63,9 @@ services:
       --prometheus.url http://prom_main:9090
       --tsdb.path /prometheus
       --objstore.config-file /etc/thanos/bucket_config.yml
-      --http-address 0.0.0.0:19191
+      --http-address 0.0.0.0:19193
       --grpc-address 0.0.0.0:19090
+    ports:
+      - "19193:19193"
+      - "19090:19090"
     restart: always

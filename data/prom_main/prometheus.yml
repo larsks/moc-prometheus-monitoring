@@ -29,52 +29,67 @@ rule_files:
 # - "second_rules.yml"
 
 scrape_configs:
+
+  ##
+  ## Meta-monitoring
+  ##
+
   - job_name: 'prometheus'
     static_configs:
       - targets:
-          - localhost:9090
-
-  # This job scrapes node_exporter on the host running
-  # the docker-compose stack.
-  - job_name: 'local-node'
-    file_sd_configs:
-      - files:
-          - /run/prometheus/targets.json
+          - prom1.kzn.moc:9090
+          - prom2.kzn.moc:9090
     relabel_configs:
       - source_labels: [__address__]
-        regex: (.*?)(:.*)?
+        regex: ([^:]*)(:.*)?
+        replacement: $1
+        target_label: instance
+
+  - job_name: 'prom-nodes'
+    static_configs:
+      - targets:
+          - prom0.kzn.moc:9100
+          - prom1.kzn.moc:9100
+          - prom2.kzn.moc:9100
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: ([^:]*)(:.*)?
         replacement: $1
         target_label: instance
 
   - job_name: 'traefik'
     static_configs:
       - targets:
-          - frontend:8080
+          - prom0.kzn.moc:8080
 
   - job_name: 'victoria-metrics'
     static_configs:
       - targets:
-          - vmetrics:8428
+          - prom0.kzn.moc:8428
 
   - job_name: 'thanos-store'
     static_configs:
       - targets:
-          - thanos_store:19191
+          - prom0.kzn.moc:19191
 
   - job_name: 'thanos-compact'
     static_configs:
       - targets:
-          - thanos_compactor:19191
-
-  - job_name: 'thanos-sidecar'
-    static_configs:
-      - targets:
-          - thanos_sidecar:19191
+          - prom0.kzn.moc:19192
 
   - job_name: 'thanos-query'
     static_configs:
       - targets:
-          - thanos_query:19192
+          - prom0.kzn.moc:19193
+
+  ##
+  ## Local targets
+  ##
+
+  - job_name: 'thanos-sidecar'
+    static_configs:
+      - targets:
+          - thanos_sidecar:19193
 
   - job_name: 'openstack-cinder'
     scrape_interval: 15m
@@ -96,6 +111,10 @@ scrape_configs:
     static_configs:
       - targets:
           - nova_exporter:5114
+
+  ##
+  ## Remote targets
+  ##
 
   - job_name: 'undercloud'
     static_configs:
@@ -137,7 +156,7 @@ scrape_configs:
           - neu-5-38-stackcomp.kzn.moc:9100
     relabel_configs:
       - source_labels: [__address__]
-        regex: (.*?)(:.*)?
+        regex: ([^:]*)(:.*)?
         replacement: $1
         target_label: instance
 
@@ -149,7 +168,7 @@ scrape_configs:
           - neu-5-39-control2.kzn.moc:9100
     relabel_configs:
       - source_labels: [__address__]
-        regex: (.*?)(:.*)?
+        regex: ([^:]*)(:.*)?
         replacement: $1
         target_label: instance
 
@@ -160,7 +179,7 @@ scrape_configs:
           - neu-19-11-nc1.kzn.moc:9100
     relabel_configs:
       - source_labels: [__address__]
-        regex: (.*?)(:.*)?
+        regex: ([^:]*)(:.*)?
         replacement: $1
         target_label: instance
 
@@ -199,9 +218,9 @@ scrape_configs:
           - neu-5-38-stackcomp.kzn.moc:5111
     relabel_configs:
       - source_labels: [__address__]
-        regex: (.*?)(:.*)?
+        regex: ([^:]*)(:.*)?
         replacement: $1
         target_label: instance
 
 remote_write:
-  - url: http://vmetrics:8428/api/v1/write
+  - url: http://prom0.kzn.moc:8428/api/v1/write
