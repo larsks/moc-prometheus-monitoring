@@ -54,7 +54,7 @@ services:
   # storage service and also provides the query server with access to the
   # local data.
   thanos_sidecar:
-    image: thanosio/thanos
+    image: thanosio/thanos:master-2020-03-09-45d6bb8d
     volumes:
       - prometheus_data_main:/prometheus
       - ./thanos:/etc/thanos

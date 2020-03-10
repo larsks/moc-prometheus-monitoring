@@ -11,7 +11,7 @@ services:
   # The Thanos store gateway provides the query server with access to
   # data in the object store.
   thanos_store:
-    image: thanosio/thanos
+    image: thanosio/thanos:master-2020-03-09-45d6bb8d
     volumes:
       - ./thanos:/etc/thanos
     command: >-
@@ -26,7 +26,7 @@ services:
   # aggregates data from multiple sources (specifically, the
   # thanos_sidecar and thanos_store containers).
   thanos_query:
-    image: thanosio/thanos
+    image: thanosio/thanos:master-2020-03-09-45d6bb8d
     command: >-
       query
       --http-address 0.0.0.0:19192
@@ -46,7 +46,7 @@ services:
   # Downsamples data in the object store to provide better performance
   # when querying data in the past.
   thanos_compactor:
-    image: thanosio/thanos
+    image: thanosio/thanos:master-2020-03-09-45d6bb8d
     volumes:
       - ./thanos:/etc/thanos
     command: >-

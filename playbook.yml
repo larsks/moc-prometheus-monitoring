@@ -31,9 +31,15 @@
   tags: [docker,docker-worker]
   roles:
     - docker-host
-    - docker-swarm/worker
 
 - hosts: prometheus
   tags: [user]
   roles:
     - monitor-user
+
+- hosts: prometheus
+  tags: [config]
+  become: true
+  become_user: monitor
+  roles:
+    - clone-repo
