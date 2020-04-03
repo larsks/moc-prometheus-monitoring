@@ -194,3 +194,4 @@ services:
     command: >-
       -storageDataPath /data/vmetrics
       -retentionPeriod 6
+    restart: always
