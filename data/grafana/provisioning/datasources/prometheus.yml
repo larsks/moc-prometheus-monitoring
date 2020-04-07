@@ -10,3 +10,11 @@ datasources:
     type: prometheus
     access: proxy
     url: http://prom_main:9090
+
+deleteDatasources:
+  - name: "Prometheus (Timescale)"
+    orgId: 1
+  - name: "Prometheus (VictoriaMetrics)"
+    orgId: 1
+  - name: "Prometheus (Thanos)"
+    orgId: 1
