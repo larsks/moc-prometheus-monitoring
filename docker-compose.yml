@@ -5,7 +5,6 @@ volumes:
   prometheus_data_main:
   prometheus_run:
   traefik_data:
-  vmetrics_data:
 
   # We mark the grafana_data volume as "external" so that it
   # doesn't get deleted when we run "docker-compose down -v"
@@ -185,13 +184,4 @@ services:
       --objstore.config-file /etc/thanos/bucket_config.yml
       --http-address 0.0.0.0:19191
       -w
-    restart: always
-
-  vmetrics:
-    image: victoriametrics/victoria-metrics
-    volumes:
-      - vmetrics_data:/data/vmetrics
-    command: >-
-      -storageDataPath /data/vmetrics
-      -retentionPeriod 6
     restart: always

@@ -6,11 +6,6 @@ datasources:
     access: proxy
     url: http://thanos_query:19192
 
-  - name: Prometheus (VictoriaMetrics)
-    type: prometheus
-    access: proxy
-    url: http://vmetrics:8428
-
   - name: Prometheus (Direct)
     type: prometheus
     access: proxy
