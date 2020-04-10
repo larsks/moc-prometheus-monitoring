@@ -5,6 +5,7 @@ volumes:
   prometheus_data_main:
   prometheus_run:
   traefik_data:
+  thanos_data:
 
   # We mark the grafana_data volume as "external" so that it
   # doesn't get deleted when we run "docker-compose down -v"
@@ -127,7 +128,8 @@ services:
     image: thanosio/thanos
     volumes:
       - prometheus_data_main:/prometheus
-      - ./thanos:/etc/thanos
+      - thanos_data:/thanos
+      - ./data/thanos:/etc/thanos
     command: >-
       sidecar
       --prometheus.url http://prom_main:9090
@@ -142,7 +144,8 @@ services:
   thanos_store:
     image: thanosio/thanos
     volumes:
-      - ./thanos:/etc/thanos
+      - ./data/thanos:/etc/thanos
+      - thanos_data:/thanos
     command: >-
       store
       --data-dir /var/thanos/cache
@@ -177,7 +180,8 @@ services:
   thanos_compactor:
     image: thanosio/thanos
     volumes:
-      - ./thanos:/etc/thanos
+      - ./data/thanos:/etc/thanos
+      - thanos_data:/thanos
     command: >-
       compact
       --data-dir /var/thanos/compact
